@@ -4,6 +4,7 @@ import argparse
 import base64
 import os
 from datetime import datetime, timezone
+from web.utils.approval import require_approval
 
 
 def extract_ref_from_api_key(api_key):
@@ -38,7 +39,8 @@ def is_empty_payload(payload):
     return False
 
 
-def crawl_supabase(base_url, api_key, aggresive=False):
+@require_approval(["aggresive", "evil"], message=None)
+def crawl_supabase(base_url, api_key, aggresive=False, evil=False):
     headers = {
         "apikey": api_key,
         "Authorization": f"Bearer {api_key}",
@@ -76,10 +78,13 @@ def crawl_supabase(base_url, api_key, aggresive=False):
             try:
                 # Start with GET. Retry with POST when GET errors/empty and POST is available.
                 method_used = "GET"
+                params = {"select": "*"} if "/rpc/" not in path else {}
+                if not evil and params:
+                    params["limit"] = 1
                 resp = requests.get(
                     full_path,
                     headers=headers,
-                    params={"select": "*"} if "/rpc/" not in path else {},
+                    params=params,
                 )
 
                 payload = parse_response_payload(resp)
@@ -125,7 +130,12 @@ def parse_args():
     parser.add_argument(
         "--aggresive",
         action="store_true",
-        help="Try POST fallback on all POST-capable endpoints (default is RPC-only)",
+        help="Try POST fallback on all POST-capable endpoints (default is RPC-only) [WARNING: May be illegal without authorization]",
+    )
+    parser.add_argument(
+        "--evil",
+        action="store_true",
+        help="Fetch all data from all endpoints (default is only one element per endpoint) [WARNING: Illegal without explicit authorization]",
     )
     args = parser.parse_args()
 
@@ -135,9 +145,9 @@ def parse_args():
     if not base_url or not api_key:
         parser.error("Both --base-url and --api-key are required.")
 
-    return base_url, api_key, args.aggresive
+    return base_url, api_key, args.aggresive, args.evil
 
 
 if __name__ == "__main__":
-    base_url_arg, api_key_arg, aggresive_arg = parse_args()
-    crawl_supabase(base_url_arg, api_key_arg, aggresive_arg)
+    base_url_arg, api_key_arg, aggresive_arg, evil_arg = parse_args()
+    crawl_supabase(base_url_arg, api_key_arg, aggresive_arg, evil_arg)

@@ -14,7 +14,11 @@ Project documentation is available at:
 
 - [Supabase Endpoint Scanner](supabase/README.md): Scans Supabase REST/OpenAPI endpoints and exports structured results.
 
-## Responsible Use
+## ⚠️ Legal Warning
+
+These tools are intended solely for hardening and securing systems. Unauthorized use on systems without explicit permission is strictly prohibited and may result in criminal prosecution. Always ensure you have proper authorization before running any tool from this project.
+
+You must:
 
 - Use these tools only on systems you own or are explicitly authorized to test.
 - Follow applicable laws, contracts, and disclosure policies.
