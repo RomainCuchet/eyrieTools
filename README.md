@@ -12,7 +12,7 @@ Project documentation is available at:
 
 ## Available Tools in This Workspace
 
-- [Supabase Endpoint Scanner](supabase/README.md): Scans Supabase REST/OpenAPI endpoints and exports structured results.
+- Supabase Endpoint Scanner : Scans Supabase REST/OpenAPI endpoints and exports structured results.
 
 ## ⚠️ Legal Warning
 
